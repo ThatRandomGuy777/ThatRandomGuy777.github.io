@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon Card Stock Checker</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f0f0f0; padding: 20px; }
+        h1 { color: #ff0000; text-align: center; }
+        .product { padding: 15px; border: 1px solid #ccc; margin-bottom: 10px; background: #fff; border-radius: 8px; }
+        .instock { color: green; font-weight: bold; }
+        .outofstock { color: red; font-weight: bold; }
+        .error { color: orange; font-weight: bold; }
+        a { text-decoration: none; color: #0077cc; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <h1>Pokemon Card Stock Checker</h1>
+    <div id="productList"></div>
+
+    <script>
+        const PRODUCTS = [
+            { name: "White Flare Elite Trainer Box", url: "https://www.pokemoncenter.com/product/10-10037-117/pokemon-tcg-scarlet-and-violet-white-flare-pokemon-center-elite-trainer-box" },
+            { name: "Black Bolt Elite Trainer Box", url: "https://www.pokemoncenter.com/product/10-10037-118/pokemon-tcg-scarlet-and-violet-black-bolt-pokemon-center-elite-trainer-box" },
+            { name: "Mega Evolution ETB - Mega Lucario", url: "https://www.pokemoncenter.com/product/10-10047-108/pokemon-tcg-mega-evolution-pokemon-center-elite-trainer-box-mega-lucario" },
+            { name: "Mega Evolution ETB - Mega Gardevoir", url: "https://www.pokemoncenter.com/product/10-10047-120/pokemon-tcg-mega-evolution-elite-trainer-box-mega-gardevoir" },
+            { name: "Mega Evolution Phantasmal Flames ETB", url: "https://www.pokemoncenter.com/product/10-10186-109/pokemon-tcg-mega-evolution-phantasmal-flames-pokemon-center-elite-trainer-box" },
+            { name: "Mega Evolution Ascended Heroes ETB", url: "https://www.pokemoncenter.com/product/10-10315-108/pokemon-tcg-mega-evolution-ascended-heroes-pokemon-center-elite-trainer-box" },
+            { name: "Mega Evolution Phantasmal Flames Booster Box", url: "https://www.pokemoncenter.com/product/10-10190-119/pokemon-tcg-mega-evolution-phantasmal-flames-booster-display-box-36-packs" },
+            { name: "Mega Evolution Enhanced Booster Box", url: "https://www.pokemoncenter.com/product/10-10057-127/pokemon-tcg-mega-evolution-enhanced-booster-display-box-36-packs-and-1-promo-card" },
+            { name: "Destined Rivals Booster Box", url: "https://www.pokemoncenter.com/product/10-10157-101/pokemon-tcg-scarlet-and-violet-destined-rivals-booster-display-box-36-packs" },
+            { name: "Prismatic Evolutions Booster Bundle (Best Buy)", url: "https://www.bestbuy.com/product/pokemon-trading-card-game-scarlet-violet-prismatic-evolutions-booster-bundle/JJG2TL23JK" }
+        ];
+
+        const productList = document.getElementById("productList");
+
+        // Create product elements
+        PRODUCTS.forEach(product => {
+            const div = document.createElement("div");
+            div.classList.add("product");
+            div.innerHTML = `
+                <h2>${product.name}</h2>
+                <p>Status: <span class="status">Checking...</span></p>
+                <a href="${product.url}" target="_blank">Go to Product</a>
+            `;
+            productList.appendChild(div);
+        });
+
+        // Function to check stock using CORS proxy
+        async function checkStockReal(productDiv, url) {
+            try {
+                const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+                const data = await response.json();
+                const content = data.contents;
+
+                const inStock = content.includes('data-test="add-to-cart"') && !content.includes('disabled');
+                const statusSpan = productDiv.querySelector(".status");
+
+                if (inStock) {
+                    statusSpan.textContent = "IN STOCK";
+                    statusSpan.classList.add("instock");
+                    statusSpan.classList.remove("outofstock", "error");
+                } else {
+                    statusSpan.textContent = "OUT OF STOCK";
+                    statusSpan.classList.add("outofstock");
+                    statusSpan.classList.remove("instock", "error");
+                }
+            } catch (err) {
+                console.error(err);
+                const statusSpan = productDiv.querySelector(".status");
+                statusSpan.textContent = "ERROR";
+                statusSpan.classList.add("error");
+                statusSpan.classList.remove("instock", "outofstock");
+            }
+        }
+
+        // Update all products
+        function updateAllProducts() {
+            const productDivs = document.querySelectorAll(".product");
+            PRODUCTS.forEach((product, i) => {
+                checkStockReal(productDivs[i], product.url);
+            });
+        }
+
+        // Initial check and repeat every 60 seconds
+        updateAllProducts();
+        setInterval(updateAllProducts, 60000);
+    </script>
+
+</body>
+</html>
