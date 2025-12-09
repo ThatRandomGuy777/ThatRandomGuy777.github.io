@@ -7,7 +7,8 @@
 <style>
     body {
         font-family: 'Arial', sans-serif;
-        background: url('https://wallpaperaccess.com/full/2079205.jpg') no-repeat center center fixed;
+        /* Pokémon‑themed Dialga background */
+        background: url("https://wallup.net/wp-content/uploads/2019/10/1920x1080-pokemon_Dialga.jpg") no-repeat center center fixed;
         background-size: cover;
         color: #fff;
         margin: 0;
@@ -99,7 +100,7 @@
 </header>
 
 <div id="disclaimer">
-    ⚠️ Note: These items might not actually be in stock. Please double-check the store before purchasing! ⚠️
+    ⚠️ Note: These items might not actually be in stock. Please double‑check the store before purchasing! ⚠️
 </div>
 
 <div id="productList"></div>
@@ -107,8 +108,6 @@
 <script>
 const CHECK_INTERVAL = 60;
 let countdown = CHECK_INTERVAL;
-
-// Track which items have already opened a tab for current in-stock
 const openedItems = new Set();
 
 const PRODUCTS = [
@@ -128,7 +127,6 @@ const productList = document.getElementById("productList");
 const countdownDisplay = document.getElementById("countdown");
 const nextRefreshDisplay = document.getElementById("nextRefresh");
 
-// Create product cards
 PRODUCTS.forEach(product => {
     const div = document.createElement("div");
     div.classList.add("product");
@@ -142,15 +140,13 @@ PRODUCTS.forEach(product => {
     productList.appendChild(div);
 });
 
-// Simulated stock check
 function checkStockSimulated(productDiv, productName, productUrl) {
     const statusSpan = productDiv.querySelector(".status");
-    const inStock = Math.random() > 0.5; // random for demo
+    const inStock = Math.random() > 0.5;
     if (inStock) {
         statusSpan.textContent = "IN STOCK";
         statusSpan.classList.add("instock");
         statusSpan.classList.remove("outofstock");
-        // Open the tab once if it hasn't been opened for this stock period
         if (!openedItems.has(productName)) {
             window.open(productUrl, "_blank");
             openedItems.add(productName);
@@ -159,20 +155,18 @@ function checkStockSimulated(productDiv, productName, productUrl) {
         statusSpan.textContent = "OUT OF STOCK";
         statusSpan.classList.add("outofstock");
         statusSpan.classList.remove("instock");
-        openedItems.delete(productName); // reset so it can open next time in stock
+        openedItems.delete(productName);
     }
 }
 
-// Update all products
 function updateAllProducts() {
     const productDivs = document.querySelectorAll(".product");
     PRODUCTS.forEach((product, i) => {
         checkStockSimulated(productDivs[i], product.name, product.url);
     });
-    countdown = CHECK_INTERVAL; // reset countdown
+    countdown = CHECK_INTERVAL;
 }
 
-// Countdown timer
 setInterval(() => {
     countdown--;
     if (countdown <= 0) {
@@ -182,9 +176,7 @@ setInterval(() => {
     nextRefreshDisplay.textContent = `Next Refresh: in ${countdown}s`;
 }, 1000);
 
-// Initial update
 updateAllProducts();
-
 </script>
 </body>
 </html>
