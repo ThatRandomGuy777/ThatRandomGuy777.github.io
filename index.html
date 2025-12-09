@@ -7,6 +7,7 @@
     <style>
         body { font-family: Arial, sans-serif; background: #f0f0f0; padding: 20px; }
         h1 { color: #ff0000; text-align: center; }
+        #countdown { font-size: 18px; text-align: center; margin-bottom: 20px; }
         .product { padding: 15px; border: 1px solid #ccc; margin-bottom: 10px; background: #fff; border-radius: 8px; }
         .instock { color: green; font-weight: bold; }
         .outofstock { color: red; font-weight: bold; }
@@ -18,9 +19,13 @@
 <body>
 
     <h1>Pokemon Card Stock Checker</h1>
+    <div id="countdown">Next check in: 60s</div>
     <div id="productList"></div>
 
     <script>
+        const CHECK_INTERVAL = 60; // seconds
+        let countdown = CHECK_INTERVAL;
+
         const PRODUCTS = [
             { name: "White Flare Elite Trainer Box", url: "https://www.pokemoncenter.com/product/10-10037-117/pokemon-tcg-scarlet-and-violet-white-flare-pokemon-center-elite-trainer-box" },
             { name: "Black Bolt Elite Trainer Box", url: "https://www.pokemoncenter.com/product/10-10037-118/pokemon-tcg-scarlet-and-violet-black-bolt-pokemon-center-elite-trainer-box" },
@@ -35,6 +40,7 @@
         ];
 
         const productList = document.getElementById("productList");
+        const countdownDisplay = document.getElementById("countdown");
 
         // Create product elements
         PRODUCTS.forEach(product => {
@@ -82,11 +88,20 @@
             PRODUCTS.forEach((product, i) => {
                 checkStockReal(productDivs[i], product.url);
             });
+            countdown = CHECK_INTERVAL; // reset countdown
         }
 
-        // Initial check and repeat every 60 seconds
+        // Countdown timer
+        setInterval(() => {
+            countdown--;
+            if (countdown <= 0) {
+                updateAllProducts();
+            }
+            countdownDisplay.textContent = `Next check in: ${countdown}s`;
+        }, 1000);
+
+        // Initial check
         updateAllProducts();
-        setInterval(updateAllProducts, 60000);
     </script>
 
 </body>
